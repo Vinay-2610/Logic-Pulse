@@ -1,0 +1,92 @@
+
+--- Detailed Behavior & Implementation Notes (what to generate)
+
+FRONTEND (React)
+- Design a top navbar with app name "LogicPulse" and tabs: Simulator | Verilog | Projects | Docs.
+- Simulator.jsx:
+  - Left palette with draggable components (Gate icons for AND/OR/NOT/NAND/NOR/XOR, Inputs, Clocks, LEDs, MUX, DEMUX, Encoders, Decoders, Flip-Flops, Counters).
+  - Center canvas area where user can place components and draw wires (use an existing open-source canvas wiring library if available; otherwise implement simple node-pin-wire system).
+  - Right side properties panel showing selected component parameters (label, initial value, propagation delay).
+  - Bottom controls: Run (step / continuous / pause), Reset, Save, Export PNG.
+  - Simulation runs client-side by evaluating network of logic gates per tick (a simple event-driven discrete simulator). Implement TTL-level boolean simulation and clock tick propagation. For more advanced verification, user can export to Verilog testbench or use the backend /verilog path.
+- VerilogEditor.jsx:
+  - Monaco code editor showing sample template (4-bit counter).
+  - Buttons: Save, Compile, Simulate.
+  - Compile calls `POST /compile` with `{language: "verilog", code: "..."}` — show compiler output (errors/warnings) in console panel.
+  - Simulate calls `POST /simulate` — returns VCD or structured waveform JSON; show it in WaveformViewer component with zoom & pan and ability to toggle signals.
+- WaveformViewer.jsx:
+  - Accept structured JSON like `{time: [0,5,10...], signals: {clk: [0,1,0...], q: [0,0,1...]}}` and render stacked timelines.
+  - Allow export of waveform as PNG.
+- Projects page: list saved circuits and verilog files (from server `/projects` route).
+
+BACKEND (Node + Express)
+- server.js: setup express, bodyParser, static serve for frontend build (in production), routes mounted.
+- compile.js route:
+  - Accept code & language
+  - Save code to `/server/data/<random>.v`
+  - Try to run `iverilog -g2012 -o /tmp/<id>.out /path/to/file.v` — use child_process.exec
+  - If binary not found or fails, return error and also call simFallback.js to attempt light-weight syntax check or pseudo-compile for demo.
+  - Return `{status: "ok", stdout: "...", stderr: "..."}` or `{status: "error", message: "iverilog not installed - using fallback"}`
+- simulate.js route:
+  - If iverilog available: run `iverilog` + `vvp` with a testbench or run `iverilator` flow if configured; capture stdout & produce `.vcd`.
+  - If vcd produced: parse with `vcdParser.js` and return waveform JSON.
+  - Else: call `simFallback` to run a small behavioral simulation (limited constructs) and return synthetic waveform.
+- parseVcd.js route:
+  - Accept uploaded `.vcd` file, parse via `vcd-parser` or `vcdParser` util, and return JSON.
+- vcdParser.js:
+  - Use npm `vcd-parser` or implement a minimal parser to extract timestamps and variable value changes.
+
+FALLBACK SIMULATOR (important for Replit demo)
+- Implement `simFallback.js` that:
+  - Accepts very simple Verilog-like constructs or a simplified netlist exported from frontend.
+  - Runs a basic event-driven sim for gates and flip-flops for N ticks.
+  - Returns waveform JSON. This ensures demo works even without native iverilog.
+
+RUN / DEV SCRIPTS
+- Root `package.json` scripts:
+  - `"dev": "concurrently \"npm --prefix server run dev\" \"npm --prefix frontend run dev\""`
+  - `"start": "node server/server.js"`
+- server/package.json:
+  - `"dev": "nodemon server.js"`
+- frontend/package.json:
+  - `"dev": "vite"`
+
+README (must include)
+- Exact steps to run in Replit:
+  1. Fork this Repl
+  2. Open Shell and run `npm run dev` in root (or use run button)
+  3. If `iverilog` is required and not present, follow notes to enable it or rely on fallback:
+     - On Replit you may need to use `replit.nix` to install `iverilog` or use alternative remote compile service.
+  4. Use Simulator tab to drag-drop and simulate; use Verilog tab to compile & simulate with backend.
+- Explain limitations: fallback sim supports only limited constructs; full Verilog support requires installing iverilog in the environment or using a remote compile service.
+
+ENV / Security Notes
+- No API keys required for basic functionality. If later integrating YouTube/OpenAI/HuggingFace, read README for `.env` usage.
+- Warn users not to post secret keys.
+
+UX / Visual Theme
+- Default dark theme (navy/black) with neon-blue accents and rounded cards. Keep layout minimal and education-first.
+- Provide sample circuits + sample verilog templates (4-bit counter, half-adder, JK flip-flop, traffic light controller) preloaded in `/server/data/samples`.
+
+Developer Notes & TODOs (add these to scaffold)
+- TODO: Replace fallback simulator with full iverilog integration when environment supports it.
+- TODO: Add job queue (Bull / Redis) for long-running simulations.
+- TODO: Add authentication & project storage (Supabase).
+- TODO: Add waveform zoom sliders & marker cursors.
+- TODO: Add unit tests for vcd parser & sim fallback.
+
+Deliverables (what Replit should generate)
+1. A working Repl with React frontend + Express backend scaffolded exactly as above.
+2. Minimal but functional client-side circuit builder + run controls (client sim).
+3. Monaco editor in Verilog tab with compile & simulate wired to backend endpoints (using fallback if iverilog not available).
+4. README with run instructions and `run` script that starts both frontend & backend (or single command).
+5. Sample circuits and verilog files included.
+
+---
+
+Final note for the Replit generator:  
+- Prioritize getting a functional **demo** in the browser using client-side simulation and the Verilog editor calling the fallback simulator.  
+- Add clear comments & TODOs so a developer can later replace fallback with system iverilog calls or a remote simulator.
+- Keep the code modular and well-documented.
+
+Paste the entire prompt into Replit (or Replit AI) and request: "Scaffold the project now" — then implement the scaffold files exactly as described above. Thank you.

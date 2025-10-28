@@ -1,0 +1,35 @@
+Prompt for Replit — Full-stack Project Scaffold: "LogicPulse Mini-Sim"  
+Goal: create a Falstad-like **browser-based circuit simulator** (gates → converters → flip-flops → sequential blocks, etc.) + a **separate Verilog editor + compile+simulate backend**. Make this a runnable Replit project (single Repl) that a student can immediately fork and run. Be explicit about file structure, libraries, endpoints, and how to run locally. Include TODOs for keys or native tools (e.g., Icarus Verilog) and provide safe fallbacks (WASM or remote simulation) if native tools aren't available.
+
+--- Requirements / Acceptance Criteria
+1. Browser circuit simulator UI that lets users drag & drop components, wire them, set inputs, run simulation, inspect signals (time-domain / step-by-step). Must include: logic gates, multiplexers, decoders/encoders, flip-flops (D, T, JK, SR), counters, registers, basic converters (binary-BCD), and LEDs/outputs.
+2. Circuit canvas with zoom/pan, component palette, property inspector, save/load circuit JSON, export as image.
+3. Inline waveform viewer for simple timing view (for circuits simulated client-side).
+4. Separate Verilog workspace (Monaco or CodeMirror editor) with:
+   - Save/load files
+   - "Compile" button that calls backend `/compile` endpoint
+   - "Simulate" button that calls backend `/simulate` and returns VCD or structured waveform JSON to plot in the waveform viewer
+5. Backend endpoints:
+   - `POST /compile` — compile Verilog (return compile stdout/stderr)
+   - `POST /simulate` — run simulation (return VCD path or waveform JSON)
+   - `POST /parse-vcd` — parse VCD -> structured JSON for frontend
+   - `GET /status` — health check
+   - Implementation should use local iverilog/iverilog+vvp if available on Replit; if not available, fallback to:
+     - (A) a lightweight WebAssembly-based simulator (if available) OR
+     - (B) an internal, simple behavioral simulator for a limited subset (for demo purpose), and mark TODO to replace with full iverilog integration.
+6. Provide a clear, minimal UI/UX (React + Tailwind recommended) with two main routes/tabs:
+   - `/simulator` — visual circuit builder & run controls
+   - `/verilog` — code editor, compile/simulate, waveform viewer
+7. Provide clear README instructions and scripts so the Repl can be RUN immediately with a single `run` command (Replit `run`).
+8. Keep everything in one Repl: frontend (React), backend (Express or FastAPI via Node or Python), and required static assets (circuit library JS). Use Node/Express for simplicity in Replit; okay to use Python FastAPI if you prefer — but be explicit.
+9. Provide TODO markers and comments for future improvements (AI-assistant, Supabase, production-grade job queue, caching, Dockerization).
+
+--- Suggested Tech Stack (use these in the scaffold)
+- Frontend: React (Vite or CRA) + Tailwind CSS + Monaco Editor (for Verilog) + simple canvas library or integrate open-source circuitjs (Falstad port) or use `circuitjs1` as static asset.
+- Waveform viewer: lightweight custom React chart (Plotly / Chart.js / lightweight canvas) or WaveDrom-like simple time chart.
+- Backend: Node.js + Express (single `server.js`) — runs shell commands for iverilog / vvp if present; fallback simulation logic in JS/Python.
+- VCD parser: Node implementation (use `vcd-parser` npm or write a small parser); also provide Python fallback if using FastAPI.
+- Storage: local disk for saved circuits & Verilog files (in `data/`), and a simple JSON store.
+- Dev tools: npm/Yarn, concurrently (to run frontend + backend), prisma / sqlite optional (but not necessary).
+
+--- Project File Structure (explicit)
