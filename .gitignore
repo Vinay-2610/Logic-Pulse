@@ -8,3 +8,6 @@ vite.config.ts.*
 .env.local
 .env.production
 .vercel
+server/data/*.v
+server/data/*.out
+!server/data/samples/**
