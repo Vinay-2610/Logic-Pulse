@@ -29,6 +29,51 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React core
+          'react-vendor': ['react', 'react-dom', 'react/jsx-runtime'],
+          
+          // React Router
+          'router': ['wouter'],
+          
+          // UI Libraries - Radix UI components
+          'ui-radix': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-label',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-switch',
+            '@radix-ui/react-slider',
+          ],
+          
+          // Monaco Editor (large dependency)
+          'monaco': ['@monaco-editor/react'],
+          
+          // Form libraries
+          'forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          
+          // Icons
+          'icons': ['lucide-react'],
+          
+          // Data fetching
+          'query': ['@tanstack/react-query'],
+          
+          // Charts
+          'charts': ['recharts'],
+          
+          // Utilities
+          'utils': ['clsx', 'tailwind-merge', 'class-variance-authority', 'date-fns'],
+        },
+      },
+    },
   },
   server: {
     fs: {
