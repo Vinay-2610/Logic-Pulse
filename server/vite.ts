@@ -68,18 +68,25 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "public");
+  // In production, files are in dist/public (relative to project root)
+  const distPath = path.resolve(process.cwd(), "dist", "public");
 
+  console.log(`[express] Looking for static files in: ${distPath}`);
+  
   if (!fs.existsSync(distPath)) {
+    console.error(`[express] Build directory not found: ${distPath}`);
     throw new Error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`,
     );
   }
 
+  console.log(`[express] Serving static files from: ${distPath}`);
   app.use(express.static(distPath));
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+    const indexPath = path.resolve(distPath, "index.html");
+    console.log(`[express] Serving index.html from: ${indexPath}`);
+    res.sendFile(indexPath);
   });
 }
