@@ -35,10 +35,12 @@ export function simulateVerilogFallback(code: string, timeSteps: number = 100): 
   for (let t = 0; t < timeSteps; t++) {
     time.push(t);
 
+    // Generate clock signals with proper period (toggle every 5 time steps for visible square waves)
     for (const clk of clockSignals) {
-      state[clk] = t % 2;
+      state[clk] = Math.floor(t / 5) % 2;
     }
 
+    // Reset signal: high for first 10 time steps, then low
     const resetSignals = findResetSignals(testbench.body);
     for (const rst of resetSignals) {
       if (t < 10) {
@@ -48,6 +50,26 @@ export function simulateVerilogFallback(code: string, timeSteps: number = 100): 
       }
     }
 
+    // Simulate counter logic (simple increment on clock edge)
+    for (const clk of clockSignals) {
+      const prevClk = t > 0 ? Math.floor((t - 1) / 5) % 2 : 0;
+      const currClk = Math.floor(t / 5) % 2;
+      
+      // Detect rising edge (0 -> 1 transition)
+      if (currClk === 1 && prevClk === 0) {
+        // Increment counters on rising edge
+        for (const wire of wires) {
+          if (wire.includes('count') || wire.includes('q')) {
+            const isReset = resetSignals.some(rst => state[rst] === 1);
+            if (!isReset) {
+              state[wire] = ((state[wire] || 0) + 1) % 2; // Toggle for simple simulation
+            }
+          }
+        }
+      }
+    }
+
+    // Record all signal values for this time step
     for (const signal in signals) {
       signals[signal].push(state[signal] || 0);
     }
