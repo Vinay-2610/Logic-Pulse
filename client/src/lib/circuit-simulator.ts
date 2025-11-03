@@ -8,8 +8,16 @@ export function simulateCircuit(
   const time: number[] = [];
   const signals: Record<string, (number | string)[]> = {};
 
+  // Initialize signals for all components
   components.forEach((comp) => {
     signals[comp.label] = [];
+  });
+
+  // Reset component states before simulation
+  components.forEach((comp) => {
+    if (comp.state) {
+      comp.state = {};
+    }
   });
 
   for (let t = 0; t < timeSteps; t++) {
@@ -17,18 +25,30 @@ export function simulateCircuit(
 
     const componentOutputs = new Map<string, number[]>();
 
-    components.forEach((comp) => {
+    // Evaluate components in order (inputs first, then gates, then outputs)
+    const sortedComponents = [...components].sort((a, b) => {
+      const order = { input: 0, clock: 0, and: 1, or: 1, not: 1, nand: 1, nor: 1, xor: 1, xnor: 1, led: 2 };
+      return (order[a.type as keyof typeof order] || 1) - (order[b.type as keyof typeof order] || 1);
+    });
+
+    sortedComponents.forEach((comp) => {
       const inputs = getComponentInputs(comp, wires, componentOutputs, components);
       const outputs = evaluateComponent(comp, inputs, t);
       componentOutputs.set(comp.id, outputs);
 
-      if (comp.outputs && comp.outputs > 0) {
+      // Record signal value for waveform
+      if (comp.type === "input" || comp.type === "clock") {
         signals[comp.label].push(Number(outputs[0] || 0));
-      } else if (comp.type === "input") {
-        signals[comp.label].push(Number(comp.value || 0));
+      } else if (comp.outputs && comp.outputs > 0) {
+        signals[comp.label].push(Number(outputs[0] || 0));
+      } else if (comp.type === "led") {
+        // For LEDs, record the input value
+        signals[comp.label].push(Number(inputs[0] || 0));
       }
     });
   }
+
+  console.log("Simulation complete:", { time: time.length, signals: Object.keys(signals).length, sampleData: Object.entries(signals).slice(0, 2) });
 
   return {
     waveform: {

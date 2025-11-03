@@ -16,6 +16,20 @@ export function WaveformViewer({ data, onClose }: WaveformViewerProps) {
   );
   const canvasRefs = useRef<{ [key: string]: HTMLCanvasElement | null }>({});
 
+  // Debug: Log waveform data
+  useEffect(() => {
+    console.log("Waveform data received:", {
+      timeSteps: data.time.length,
+      signals: Object.keys(data.signals),
+      sampleValues: Object.entries(data.signals).map(([name, values]) => ({
+        name,
+        length: values.length,
+        sample: values.slice(0, 10),
+        hasChanges: new Set(values).size > 1
+      }))
+    });
+  }, [data]);
+
   const toggleSignal = (signalName: string) => {
     setVisibleSignals((prev) => {
       const next = new Set(prev);
