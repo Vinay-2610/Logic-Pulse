@@ -1,8 +1,16 @@
 # Vercel Deployment Troubleshooting
 
-## Recent Fix Applied ✅
+## Recent Fixes Applied ✅
 
-The `ERR_MODULE_NOT_FOUND` error has been fixed by:
+### Fix #2 (Latest - Build Warnings)
+The build warnings about deprecated `builds` config have been fixed by:
+1. Simplified `vercel.json` to remove deprecated properties
+2. Consolidated all API routes directly in `api/index.js`
+3. Removed dependency on `dist/app.js` for cleaner deployment
+4. Using `/tmp` directory for Vercel file operations
+
+### Fix #1 (Module Not Found)
+The `ERR_MODULE_NOT_FOUND` error was fixed by:
 1. Refactoring the app to separate Express app creation from server listening
 2. Creating a proper Vercel serverless function entry point
 3. Updating the build process to work with Vercel's serverless architecture
@@ -95,18 +103,10 @@ vercel --prod --force
 
 ## Build Configuration
 
-Your `vercel.json` should look like this:
+Your `vercel.json` should look like this (simplified):
 ```json
 {
-  "version": 2,
   "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "functions": {
-    "api/index.js": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
@@ -115,6 +115,8 @@ Your `vercel.json` should look like this:
   ]
 }
 ```
+
+This is the modern Vercel configuration without deprecated `builds` or `version` properties.
 
 ## Check Build Logs
 
