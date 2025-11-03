@@ -399,6 +399,27 @@ export default function Simulator() {
       return;
     }
 
+    if (components.length === 0) {
+      toast({
+        title: "No components",
+        description: "Add components to the circuit before simulating",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if circuit has a clock component
+    const hasClock = components.some(c => c.type === 'clock');
+    
+    if (!hasClock) {
+      toast({
+        title: "Add a Clock component",
+        description: "Waveforms need a Clock component to show time-varying signals. Load a sample circuit or add a Clock from the palette.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSimulating(true);
     const result = simulateCircuit(components, wires, 100);
     setWaveformData(result.waveform);
