@@ -119,24 +119,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         }
       } catch (error: any) {
-        if (error.message.includes("iverilog") && error.message.includes("not found")) {
+        // Check if iverilog is not installed
+        const isIverilogMissing = error.message.includes("iverilog") || 
+                                  error.code === "ENOENT" ||
+                                  (error.stderr && error.stderr.includes("not recognized"));
+        
+        if (isIverilogMissing) {
           try {
             const waveform = simulateVerilogFallback(code);
             result = {
               status: "ok",
               waveform,
-              message: "Simulation completed using fallback simulator (limited Verilog support)",
+              message: "Simulation completed using fallback simulator (limited Verilog support). Install iverilog for full support.",
             };
           } catch (fallbackError: any) {
             result = {
               status: "error",
-              message: fallbackError.message || "Fallback simulation failed",
+              message: `Fallback simulation failed: ${fallbackError.message || "Unknown error"}`,
             };
           }
         } else {
+          // iverilog is installed but compilation/simulation failed
+          const errorMessage = error.stderr || error.message || "Simulation failed";
           result = {
             status: "error",
-            message: error.stderr || error.message || "Simulation failed",
+            message: errorMessage,
           };
         }
       }

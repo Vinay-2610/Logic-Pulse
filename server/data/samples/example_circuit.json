@@ -1,0 +1,108 @@
+{
+  "name": "Example Circuit - Half Adder",
+  "type": "circuit",
+  "components": [
+    {
+      "id": "input1",
+      "type": "input",
+      "x": 100,
+      "y": 100,
+      "label": "Input A",
+      "inputs": 0,
+      "outputs": 1,
+      "value": 0,
+      "propagationDelay": 1,
+      "state": {}
+    },
+    {
+      "id": "input2",
+      "type": "input",
+      "x": 100,
+      "y": 200,
+      "label": "Input B",
+      "inputs": 0,
+      "outputs": 1,
+      "value": 0,
+      "propagationDelay": 1,
+      "state": {}
+    },
+    {
+      "id": "xor1",
+      "type": "xor",
+      "x": 300,
+      "y": 100,
+      "label": "XOR Gate",
+      "inputs": 2,
+      "outputs": 1,
+      "propagationDelay": 1,
+      "state": {}
+    },
+    {
+      "id": "and1",
+      "type": "and",
+      "x": 300,
+      "y": 200,
+      "label": "AND Gate",
+      "inputs": 2,
+      "outputs": 1,
+      "propagationDelay": 1,
+      "state": {}
+    },
+    {
+      "id": "led1",
+      "type": "led",
+      "x": 500,
+      "y": 100,
+      "label": "Sum",
+      "inputs": 1,
+      "outputs": 0,
+      "value": 0,
+      "propagationDelay": 1,
+      "state": {}
+    },
+    {
+      "id": "led2",
+      "type": "led",
+      "x": 500,
+      "y": 200,
+      "label": "Carry",
+      "inputs": 1,
+      "outputs": 0,
+      "value": 0,
+      "propagationDelay": 1,
+      "state": {}
+    }
+  ],
+  "wires": [
+    {
+      "id": "wire1",
+      "from": { "componentId": "input1", "pinIndex": 0 },
+      "to": { "componentId": "xor1", "pinIndex": 0 }
+    },
+    {
+      "id": "wire2",
+      "from": { "componentId": "input2", "pinIndex": 0 },
+      "to": { "componentId": "xor1", "pinIndex": 1 }
+    },
+    {
+      "id": "wire3",
+      "from": { "componentId": "input1", "pinIndex": 0 },
+      "to": { "componentId": "and1", "pinIndex": 0 }
+    },
+    {
+      "id": "wire4",
+      "from": { "componentId": "input2", "pinIndex": 0 },
+      "to": { "componentId": "and1", "pinIndex": 1 }
+    },
+    {
+      "id": "wire5",
+      "from": { "componentId": "xor1", "pinIndex": 0 },
+      "to": { "componentId": "led1", "pinIndex": 0 }
+    },
+    {
+      "id": "wire6",
+      "from": { "componentId": "and1", "pinIndex": 0 },
+      "to": { "componentId": "led2", "pinIndex": 0 }
+    }
+  ]
+}

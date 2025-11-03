@@ -220,6 +220,91 @@ function evaluateComponent(component: Component, inputs: number[], time: number)
       const reg = component.state.value;
       return [reg & 1, (reg >> 1) & 1, (reg >> 2) & 1, (reg >> 3) & 1];
 
+    // Passive components (pass through with optional modification)
+    case "resistor":
+    case "capacitor":
+    case "inductor":
+      return [inputs[0] || 0];
+
+    case "diode":
+    case "zenerdiode":
+    case "photodiode":
+      // Diode only passes signal in one direction
+      return [inputs[0] > 0 ? inputs[0] : 0];
+
+    // Active components
+    case "transistor-npn":
+      // NPN: if base (input 0) is high, pass collector (input 1) to emitter
+      return [inputs[0] && inputs[1] ? inputs[1] : 0];
+
+    case "transistor-pnp":
+      // PNP: if base (input 0) is low, pass emitter (input 1) to collector
+      return [!inputs[0] && inputs[1] ? inputs[1] : 0];
+
+    case "mosfet-n":
+      // N-channel: if gate (input 0) is high, pass drain (input 1) to source
+      return [inputs[0] ? inputs[1] : 0];
+
+    case "mosfet-p":
+      // P-channel: if gate (input 0) is low, pass source (input 1) to drain
+      return [!inputs[0] ? inputs[1] : 0];
+
+    case "opamp":
+      // Op-amp: amplify difference between inputs
+      const diff = (inputs[0] || 0) - (inputs[1] || 0);
+      return [diff > 0 ? 1 : 0];
+
+    case "relay":
+      // Relay: switch controlled by coil
+      return [inputs[0] ? 1 : 0];
+
+    // Power sources
+    case "battery":
+    case "vcc":
+      return [1];
+
+    case "ground":
+      return [];
+
+    // Input/Output
+    case "switch":
+    case "button":
+      return [Number(component.value) || 0];
+
+    case "buzzer":
+    case "lamp":
+    case "motor":
+    case "display7seg":
+      // Output devices - store input value
+      component.value = inputs[0];
+      return [];
+
+    // ICs
+    case "ic555":
+      // Simple 555 timer simulation (astable mode)
+      if (!component.state) component.state = { output: 0, counter: 0 };
+      component.state.counter = (component.state.counter + 1) % 10;
+      if (component.state.counter === 0) {
+        component.state.output = component.state.output ? 0 : 1;
+      }
+      return [component.state.output];
+
+    case "ic":
+      // Generic IC - pass through
+      return inputs.slice(0, component.outputs || 1);
+
+    case "shiftregister":
+      // Shift register
+      if (!component.state) component.state = { bits: [0, 0, 0, 0] };
+      const srClk = inputs[1];
+      const prevSrClk = component.state.prevClk || 0;
+      if (srClk && !prevSrClk) {
+        component.state.bits.unshift(inputs[0]);
+        component.state.bits.pop();
+      }
+      component.state.prevClk = srClk;
+      return component.state.bits;
+
     default:
       return new Array(component.outputs || 1).fill(0);
   }

@@ -171,5 +171,169 @@ export function ComponentIcon({ type, size = 32, active = false }: ComponentIcon
     );
   }
 
+  // Passive components
+  if (type === "resistor") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <path d="M8 24 L14 16 L20 32 L26 16 L32 32 L38 24" stroke={color} strokeWidth={strokeWidth} fill="none" />
+      </svg>
+    );
+  }
+
+  if (type === "capacitor") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <line x1="8" y1="24" x2="20" y2="24" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="20" y1="12" x2="20" y2="36" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="28" y1="12" x2="28" y2="36" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="28" y1="24" x2="40" y2="24" stroke={color} strokeWidth={strokeWidth} />
+      </svg>
+    );
+  }
+
+  if (type === "inductor") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <path d="M8 24 Q12 16 16 24 Q20 32 24 24 Q28 16 32 24 Q36 32 40 24" stroke={color} strokeWidth={strokeWidth} fill="none" />
+      </svg>
+    );
+  }
+
+  if (type === "diode" || type.includes("diode")) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <path d="M16 12 L32 24 L16 36 Z" stroke={color} strokeWidth={strokeWidth} fill="none" />
+        <line x1="32" y1="12" x2="32" y2="36" stroke={color} strokeWidth={strokeWidth} />
+      </svg>
+    );
+  }
+
+  if (type.includes("transistor")) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <line x1="18" y1="12" x2="18" y2="36" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="18" y1="18" x2="32" y2="12" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="18" y1="30" x2="32" y2="36" stroke={color} strokeWidth={strokeWidth} />
+        <circle cx="24" cy="24" r="12" stroke={color} strokeWidth={strokeWidth} fill="none" />
+      </svg>
+    );
+  }
+
+  if (type.includes("mosfet")) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <line x1="16" y1="12" x2="16" y2="36" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="20" y1="16" x2="32" y2="16" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="20" y1="24" x2="32" y2="24" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="20" y1="32" x2="32" y2="32" stroke={color} strokeWidth={strokeWidth} />
+      </svg>
+    );
+  }
+
+  if (type === "opamp") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <path d="M12 12 L12 36 L36 24 Z" stroke={color} strokeWidth={strokeWidth} fill="none" />
+        <text x="18" y="20" fontSize="12" fill={color}>+</text>
+        <text x="18" y="32" fontSize="12" fill={color}>-</text>
+      </svg>
+    );
+  }
+
+  if (type === "relay") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <rect x="12" y="16" width="12" height="16" stroke={color} strokeWidth={strokeWidth} fill="none" />
+        <line x1="28" y1="20" x2="36" y2="24" stroke={color} strokeWidth={strokeWidth} />
+        <circle cx="28" cy="20" r="2" fill={color} />
+        <circle cx="36" cy="28" r="2" fill={color} />
+      </svg>
+    );
+  }
+
+  if (type === "battery") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <line x1="18" y1="16" x2="18" y2="32" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="30" y1="20" x2="30" y2="28" stroke={color} strokeWidth={strokeWidth} />
+        <text x="14" y="14" fontSize="10" fill={color}>+</text>
+        <text x="32" y="14" fontSize="10" fill={color}>-</text>
+      </svg>
+    );
+  }
+
+  if (type === "ground") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <line x1="24" y1="12" x2="24" y2="24" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="16" y1="24" x2="32" y2="24" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="20" y1="28" x2="28" y2="28" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="22" y1="32" x2="26" y2="32" stroke={color} strokeWidth={strokeWidth} />
+      </svg>
+    );
+  }
+
+  if (type === "switch" || type === "button") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <circle cx="16" cy="24" r="3" fill={color} />
+        <circle cx="32" cy="24" r="3" fill={color} />
+        <line x1="16" y1="24" x2="28" y2="18" stroke={color} strokeWidth={strokeWidth} />
+      </svg>
+    );
+  }
+
+  if (type === "buzzer") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="12" stroke={color} strokeWidth={strokeWidth} fill="none" />
+        <text x="24" y="28" textAnchor="middle" fontSize="10" fill={color}>BZ</text>
+      </svg>
+    );
+  }
+
+  if (type === "lamp") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="12" stroke={color} strokeWidth={strokeWidth} fill="none" />
+        <line x1="18" y1="18" x2="30" y2="30" stroke={color} strokeWidth={strokeWidth} />
+        <line x1="30" y1="18" x2="18" y2="30" stroke={color} strokeWidth={strokeWidth} />
+      </svg>
+    );
+  }
+
+  if (type === "motor") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="12" stroke={color} strokeWidth={strokeWidth} fill="none" />
+        <text x="24" y="28" textAnchor="middle" fontSize="12" fill={color} fontWeight="bold">M</text>
+      </svg>
+    );
+  }
+
+  if (type === "display7seg") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <rect x="14" y="10" width="20" height="28" stroke={color} strokeWidth={strokeWidth} rx="2" fill="none" />
+        <text x="24" y="28" textAnchor="middle" fontSize="16" fill={color} fontWeight="bold">8</text>
+      </svg>
+    );
+  }
+
+  if (type === "ic" || type === "ic555") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <rect x="12" y="12" width="24" height="24" stroke={color} strokeWidth={strokeWidth} rx="2" fill="none" />
+        <text x="24" y="28" textAnchor="middle" fontSize="10" fill={color}>IC</text>
+        <circle cx="10" cy="16" r="2" fill={color} />
+        <circle cx="10" cy="24" r="2" fill={color} />
+        <circle cx="10" cy="32" r="2" fill={color} />
+        <circle cx="38" cy="16" r="2" fill={color} />
+        <circle cx="38" cy="24" r="2" fill={color} />
+        <circle cx="38" cy="32" r="2" fill={color} />
+      </svg>
+    );
+  }
+
   return renderGate();
 }

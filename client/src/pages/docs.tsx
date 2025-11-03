@@ -146,6 +146,61 @@ export default function Docs() {
                   </p>
                 </div>
               </div>
+
+              <Separator />
+
+              <div>
+                <h4 className="font-semibold mb-2 text-orange-500">⚠️ Common Issues & Solutions</h4>
+                <div className="space-y-3">
+                  <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-md">
+                    <p className="font-semibold text-sm mb-1">Error: "No testbench module found"</p>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Your code must include a testbench module with 'tb' or 'test' in its name.
+                    </p>
+                    <pre className="text-xs bg-black/30 p-2 rounded overflow-x-auto">
+{`module tb_mydesign;  // ✓ Correct
+  // testbench code here
+endmodule`}
+                    </pre>
+                  </div>
+
+                  <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-md">
+                    <p className="font-semibold text-sm mb-1">Error: "No valid Verilog modules found"</p>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Check your syntax. Make sure you have proper module...endmodule structure.
+                    </p>
+                    <pre className="text-xs bg-black/30 p-2 rounded overflow-x-auto">
+{`module mydesign (...);
+  // design code
+endmodule  // ← Don't forget this!`}
+                    </pre>
+                  </div>
+
+                  <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-md">
+                    <p className="font-semibold text-sm mb-1">💡 Tip: Complete Example</p>
+                    <pre className="text-xs bg-black/30 p-2 rounded overflow-x-auto mt-2">
+{`// Design module
+module and_gate (input a, input b, output y);
+  assign y = a & b;
+endmodule
+
+// Testbench (required!)
+module tb_and_gate;
+  reg a, b;
+  wire y;
+  
+  and_gate uut (.a(a), .b(b), .y(y));
+  
+  initial begin
+    a = 0; b = 0; #10;
+    a = 1; b = 1; #10;
+    $finish;
+  end
+endmodule`}
+                    </pre>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 

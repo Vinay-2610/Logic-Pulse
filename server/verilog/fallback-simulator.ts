@@ -5,10 +5,15 @@ export function simulateVerilogFallback(code: string, timeSteps: number = 100): 
   const signals: Record<string, (number | string)[]> = {};
 
   const modules = parseModules(code);
+  
+  if (modules.length === 0) {
+    throw new Error("No valid Verilog modules found. Please check your syntax. Make sure you have 'module <name> ... endmodule' structure.");
+  }
+  
   const testbench = modules.find(m => m.name.toLowerCase().includes('tb') || m.name.includes('test'));
   
   if (!testbench) {
-    throw new Error("No testbench found in Verilog code");
+    throw new Error(`No testbench module found. Please add a testbench module with 'tb' or 'test' in its name. Found modules: ${modules.map(m => m.name).join(', ')}`);
   }
 
   const registers = parseRegisters(testbench.body);
